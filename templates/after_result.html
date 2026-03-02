@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Learning Style Result</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #e9dffb 0%, #ffffff 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .result-container {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        padding: 50px;
+        width: 420px;
+        transition: all 0.3s ease;
+      }
+
+      h2 {
+        color: #4b2bbf;
+        margin-bottom: 15px;
+      }
+      p {
+        font-size: 16px;
+        margin-bottom: 25px;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background-color: #6f4edb;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: #5433b4;
+        box-shadow: 0 0 10px rgba(111, 78, 219, 0.6);
+      }
+
+      .option-btn {
+        background: #eae6ff;
+        color: #4b2bbf;
+        border: 2px solid #6f4edb;
+        border-radius: 10px;
+        padding: 12px 20px;
+        margin: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .option-btn:hover {
+        background: #6f4edb;
+        color: white;
+        transform: scale(1.05);
+      }
+
+      #visual-options {
+        display: none;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="result-container">
+        <h2 class="result-text">Your Primary Learning Style is:</h2>
+        <div class="learning-style" id="styleDisplay">{{ style }}</div>
+        <p>Confidence: {{ confidence }}%</p>
+
+        <button id="next-btn" class="option-btn" onclick="nextStep()">
+          Continue
+        </button>
+
+        <div id="visual-options" style="display: none">
+          <h3>Choose Your Visual Learning Mode:</h3>
+          <button class="option-btn" onclick="selectMode('images')">
+            Learn with Images
+          </button>
+          <button class="option-btn" onclick="selectMode('video')">
+            Learn with Videos
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Get the exact learning style from server
+      const learningStyle = "{{ style }}";
+      console.log("Received learning style:", learningStyle);
+
+      // Update the display immediately
+      document.getElementById("styleDisplay").textContent = learningStyle;
+
+      function nextStep() {
+        const nextBtn = document.getElementById("next-btn");
+        nextBtn.style.display = "none";
+
+        if (learningStyle === "Visual") {
+          document.getElementById("visual-options").style.display = "block";
+        } else {
+          // Direct navigation for non-visual styles
+          window.location.href = `/chatbot?style=${encodeURIComponent(
+            learningStyle
+          )}`;
+        }
+      }
+
+      function selectMode(mode) {
+        window.location.href = `/chatbot?mode=${mode}&style=Visual`;
+      }
+    </script>
+  </body>
+</html>

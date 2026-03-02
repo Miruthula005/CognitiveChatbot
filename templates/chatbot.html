@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chatbot</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background: #2c3e50; /* Darker blue background */
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
+      .chat-header {
+        padding: 16px 24px;
+        font-size: 20px;
+        font-weight: 600;
+        background: #34495e; /* Dark blue header */
+        color: white;
+        border-bottom: 1px solid #465c71;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+      }
+      .menu-icon {
+        cursor: pointer;
+        font-size: 22px;
+      }
+      .dropdown {
+        position: absolute;
+        top: 50px;
+        right: 24px;
+        background: #34495e; /* Dark blue dropdown */
+        border: 1px solid #465c71;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: none;
+        flex-direction: column;
+        z-index: 10;
+      }
+      .dropdown button {
+        background: none;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        text-align: left;
+        cursor: pointer;
+        color: white;
+      }
+      .dropdown button:hover {
+        background: #9b59b6; /* Purple hover state */
+        color: white;
+      }
+      .chat-body {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: #1a1a2e; /* Dark background for chat area */
+      }
+      .chat-input {
+        display: flex;
+        border-top: 1px solid #465c71;
+        padding: 10px 20px;
+        background: #34495e; /* Dark blue input area */
+      }
+      .chat-input input {
+        flex: 1;
+        padding: 12px 16px;
+        font-size: 16px;
+        border-radius: 25px;
+        border: 1px solid #465c71;
+        background: #ecf0f1; /* Light input background */
+        outline: none;
+      }
+      .chat-input button {
+        padding: 12px 20px;
+        margin-left: 10px;
+        border: none;
+        background: #9b59b6; /* Purple send button */
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 25px;
+        transition: background 0.3s ease;
+      }
+      .chat-input button:hover {
+        background: #8e44ad; /* Darker purple on hover */
+      }
+      .message {
+        padding: 12px 16px;
+        border-radius: 12px;
+        max-width: 70%;
+        word-wrap: break-word;
+      }
+      .user-msg {
+        background: #9b59b6; /* Purple user messages */
+        color: white;
+        align-self: flex-end;
+        margin-left: auto;
+        border-bottom-right-radius: 4px;
+      }
+      .bot-msg {
+        background: #3498db; /* Blue bot messages */
+        color: white;
+        align-self: flex-start;
+        margin-right: auto;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      iframe {
+        margin-top: 8px;
+        border-radius: 12px;
+      }
+      .audio-icon,
+      .youtube-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-left: 10px;
+      }
+      .audio-icon {
+        animation: pulse 1.2s infinite;
+        background: linear-gradient(135deg, #6f4edb, #d17ee0);
+      }
+      .youtube-logo {
+        background: url("https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg")
+          center/contain no-repeat;
+        animation: spin 1.5s linear infinite;
+        width: 45px;
+        height: 45px;
+      }
+
+      /* Video Card Styling */
+      .video-card {
+        background: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        margin: 10px 0;
+        max-width: 600px;
+      }
+
+      .video-header {
+        padding: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .video-icon {
+        font-size: 28px;
+        flex-shrink: 0;
+      }
+
+      .video-info {
+        flex: 1;
+      }
+
+      .video-title {
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+
+      .video-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .channel-name,
+      .duration,
+      .views {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .video-wrapper {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        background: #000;
+      }
+
+      .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .video-footer {
+        padding: 12px 15px;
+        background: #f8f9fa;
+        text-align: center;
+      }
+
+      .watch-youtube {
+        color: #9b59b6;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: color 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .watch-youtube:hover {
+        color: #8e44ad;
+        text-decoration: underline;
+      }
+
+      /* Update bot message to accommodate video cards */
+      .bot-msg .video-card {
+        max-width: 100%;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Visual mode selection modal */
+      #visual-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+      }
+      #visual-modal div {
+        background: #34495e;
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        min-width: 250px;
+      }
+      #visual-modal h3 {
+        margin-bottom: 15px;
+      }
+      #visual-modal button {
+        margin: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      #visual-modal .video-btn {
+        background: #9b59b6;
+        color: white;
+      }
+      #visual-modal .image-btn {
+        background: #3498db;
+        color: white;
+      }
+
+      .generated-image {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-top: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .bot-msg img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-top: 8px;
+      }
+
+      .term-explanations {
+        margin-top: 20px;
+        padding: 20px;
+        background: #34495e;
+        color: white;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .term-explanations h4 {
+        margin: 0 0 15px 0;
+        color: #495057;
+        font-size: 16px;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 8px;
+      }
+
+      .term-explanations .term {
+        color: #9b59b6; /* Purple terms */
+        font-weight: 600;
+        display: inline-block;
+        min-width: 120px;
+      }
+
+      .term-explanations p {
+        margin: 0 0 12px 0;
+        padding: 0;
+      }
+
+      .mode-indicator {
+        position: absolute;
+        top: 16px;
+        right: 24px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        margin-top: 5px;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .mode-indicator::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: white;
+        display: inline-block;
+      }
+
+      .visual-type-selector {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .mode-btn {
+        background: #9b59b6;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.3s ease;
+      }
+
+      .mode-btn:hover {
+        background: #8e44ad;
+      }
+
+      /* Kinesthetic Learning Styles */
+      .resource-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        color: white;
+      }
+
+      .resource-card h4 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .resource-card .resource-description {
+        font-size: 14px;
+        margin: 10px 0;
+        line-height: 1.6;
+        opacity: 0.95;
+      }
+
+      .resource-card .resource-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: white;
+        font-weight: 600;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .resource-card .resource-link:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateX(5px);
+      }
+
+      .practical-response {
+        padding: 15px;
+        border-radius: 4px;
+        margin: 10px 0;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">
+        Chatbot ({{ style }} learner)
+        <span class="menu-icon" id="menu-icon">⋮</span>
+        <div class="dropdown" id="dropdown-menu">
+          <button onclick="changeStyle('Visual')">Visual</button>
+          <button onclick="changeStyle('Auditory')">Auditory</button>
+          <button onclick="changeStyle('Reading/Writing')">
+            Reading/Writing
+          </button>
+          <button onclick="changeStyle('Kinesthetic')">Kinesthetic</button>
+        </div>
+      </div>
+
+      <div class="chat-body" id="chat-body"></div>
+
+      <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Ask me something..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <!-- Visual Mode Selection Modal -->
+    <div id="visual-modal">
+      <div>
+        <h3>Choose Visual Mode Type</h3>
+        <button class="video-btn" onclick="selectVisual('video')">
+          Video Mode
+        </button>
+        <button class="image-btn" onclick="selectVisual('image')">
+          Image Mode
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const chatBody = document.getElementById("chat-body");
+      const inputBox = document.getElementById("user-input");
+      const menuIcon = document.getElementById("menu-icon");
+      const dropdownMenu = document.getElementById("dropdown-menu");
+      let style = "{{ style }}";
+
+      // Get mode from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      let currentMode = urlParams.get("mode") || "image"; // default to image if not specified
+
+      console.log("Current style:", style);
+      console.log("Current mode:", currentMode);
+
+      menuIcon.addEventListener("click", () => {
+        dropdownMenu.style.display =
+          dropdownMenu.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if (!menuIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
+          dropdownMenu.style.display = "none";
+        }
+      });
+
+      function changeStyle(newStyle) {
+        dropdownMenu.style.display = "none";
+        if (newStyle === "Visual") {
+          document.getElementById("visual-modal").style.display = "flex";
+          return;
+        }
+        style = newStyle;
+        appendMessage(`Learning style changed to ${newStyle}`, "bot");
+      }
+
+      function selectVisual(type) {
+        document.getElementById("visual-modal").style.display = "none";
+        style = "Visual";
+
+        if (type === "video") {
+          // Redirect to chatbot with video mode
+          window.location.href = "/chatbot?style=Visual&mode=video";
+        } else if (type === "image") {
+          // Redirect to chatbot with image mode
+          window.location.href = "/chatbot?style=Visual&mode=image";
+        }
+      }
+
+      function appendMessage(text, sender, html = null) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${sender}-msg`; // Changed from ${sender} to ${sender}-msg
+
+        if (html) {
+          messageDiv.innerHTML = html;
+        } else if (
+          sender === "bot" &&
+          style.toLowerCase() === "reading/writing"
+        ) {
+          messageDiv.innerHTML = marked.parse(text);
+        } else {
+          messageDiv.textContent = text;
+        }
+
+        chatBody.appendChild(messageDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+        return messageDiv;
+      }
+
+      function getVideoId(url) {
+        const regExp = /v=([a-zA-Z0-9_-]+)/;
+        const match = url.match(regExp);
+        return match ? match[1] : "";
+      }
+
+      function isImageMode() {
+        // If we're in Visual mode but don't have the video player, we're in image mode
+        return (
+          style.toLowerCase() === "visual" &&
+          !document.querySelector(".video-player")
+        );
+      }
+
+      const rwQuotes = [
+        "Thinking...",
+        "Searching for facts...",
+        "Analyzing...",
+        "Almost there...",
+        "Checking references...",
+        "Formulating response...",
+      ];
+      const kinQuotes = [
+        "Fetching content...",
+        "Loading video...",
+        "Preparing response...",
+        "Collecting resources...",
+        "Almost ready...",
+        "Gathering examples...",
+      ];
+
+      async function sendMessage() {
+        const query = inputBox.value.trim();
+        if (!query) return;
+        appendMessage(query, "user");
+        inputBox.value = "";
+
+        if (style.toLowerCase() === "kinesthetic") {
+          const loadingMsg = appendMessage(
+            "🎯 Finding practical resources for you...",
+            "bot"
+          );
+
+          try {
+            const response = await fetch("/llm_response", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                query: query,
+                style: style,
+              }),
+            });
+
+            const data = await response.json();
+            loadingMsg.remove();
+
+            if (data.error) {
+              appendMessage("⚠️ " + data.error, "bot");
+              return;
+            }
+
+            // Display the practical explanation
+            if (data.response) {
+              const practicalHtml = `
+                <div class="practical-response">
+                  <strong>🎯 Hands-On Explanation:</strong><br><br>
+                  ${data.response.replace(/\n/g, "<br>")}
+                </div>
+              `;
+              appendMessage("", "bot", practicalHtml);
+            }
+
+            // Display the learning resource
+            if (data.resource) {
+              const resourceHtml = `
+                <div class="resource-card">
+                  <h4>📚 Recommended Resource</h4>
+                  <div class="resource-description">
+                    ${data.resource.description}
+                  </div>
+                  <a href="${data.resource.url}" target="_blank" class="resource-link">
+                    🔗 ${data.resource.title}
+                    <span style="margin-left: auto;">→</span>
+                  </a>
+                </div>
+              `;
+              appendMessage("", "bot", resourceHtml);
+            }
+          } catch (error) {
+            loadingMsg.remove();
+            console.error("Error:", error);
+            appendMessage(
+              "❌ An error occurred while generating the response. Please try again.",
+              "bot"
+            );
+          }
+        } else if (style.toLowerCase() === "visual") {
+          // Check URL parameters to determine mode
+          const urlParams = new URLSearchParams(window.location.search);
+          const mode = urlParams.get("mode");
+
+          if (mode === "video") {
+            // VIDEO MODE - Fetch YouTube video
+            const loader = appendMessage(
+              "🎥 Searching for relevant ML videos...",
+              "bot",
+              '<span class="youtube-logo"></span>'
+            );
+
+            try {
+              const res = await fetch("/get_video", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query }),
+              });
+              const data = await res.json();
+              loader.remove();
+
+              if (data.url) {
+                const videoId = getVideoId(data.url);
+
+                // Create styled video card
+                const videoCard = `
+        <div class="video-card">
+          <div class="video-header">
+            <span class="video-icon">🎬</span>
+            <div class="video-info">
+              <div class="video-title">${data.title}</div>
+              <div class="video-meta">
+                <span class="channel-name">📺 ${
+                  data.channel || "YouTube"
+                }</span>
+                ${
+                  data.duration
+                    ? `<span class="duration">⏱️ ${data.duration}</span>`
+                    : ""
+                }
+                ${
+                  data.views
+                    ? `<span class="views">👁️ ${data.views}</span>`
+                    : ""
+                }
+              </div>
+            </div>
+          </div>
+          <div class="video-wrapper">
+            <iframe 
+              width="100%" 
+              height="315" 
+              src="https://www.youtube.com/embed/${videoId}" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="video-footer">
+            <a href="${data.url}" target="_blank" class="watch-youtube">
+              Watch on YouTube →
+            </a>
+          </div>
+        </div>
+      `;
+
+                appendMessage("", "bot", videoCard);
+              } else {
+                appendMessage(
+                  "❌ " + (data.error || "No video found for your query."),
+                  "bot"
+                );
+              }
+            } catch (error) {
+              loader.remove();
+              console.error("Video fetch error:", error);
+              appendMessage("❌ Error fetching video: " + error.message, "bot");
+            }
+          } else {
+            // IMAGE MODE - Generate mindmap diagram
+            const loadingMsg = appendMessage(
+              "🎨 Generating your mindmap...",
+              "bot"
+            );
+            try {
+              const res = await fetch("/generate_image", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ prompt: query }),
+              });
+
+              if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+              }
+
+              const data = await res.json();
+              loadingMsg.remove();
+
+              if (data.image) {
+                appendMessage(`📊 Generated mindmap for: "${query}"`, "bot");
+                const imgElement = document.createElement("img");
+                imgElement.src = data.image;
+                imgElement.className = "generated-image";
+                imgElement.alt = "Generated mindmap";
+                appendMessage("", "bot", imgElement.outerHTML);
+
+                if (data.explanation) {
+                  appendMessage("💡 Concept Explanation:", "bot");
+                  const explanationDiv = document.createElement("div");
+                  explanationDiv.className = "concept-explanation";
+                  explanationDiv.textContent = data.explanation;
+                  appendMessage("", "bot", explanationDiv.outerHTML);
+                }
+              } else {
+                appendMessage(
+                  "❌ Failed to generate image: " +
+                    (data.error || "Unknown error"),
+                  "bot"
+                );
+              }
+            } catch (error) {
+              loadingMsg.remove();
+              console.error("Error:", error);
+              appendMessage(
+                "❌ Error generating image: " + error.message,
+                "bot"
+              );
+            }
+          }
+        } else if (style.toLowerCase() === "auditory") {
+          const loadingMsg = appendMessage(
+            "🎧 Generating audio response...",
+            "bot"
+          );
+
+          try {
+            const response = await fetch("/llm_response", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ query: query, style: style }),
+            });
+
+            const data = await response.json();
+            loadingMsg.remove();
+
+            if (data.error) {
+              appendMessage("⚠️ " + data.error, "bot");
+            }
+
+            // Always show text response
+            appendMessage(data.response, "bot");
+
+            // Add audio player if available
+            if (data.audio) {
+              const audioDiv = document.createElement("div");
+              audioDiv.className = "audio-player";
+              const audio = document.createElement("audio");
+              audio.controls = true;
+              audio.src = data.audio;
+              audioDiv.appendChild(audio);
+              appendMessage("", "bot", audioDiv.outerHTML);
+            }
+          } catch (error) {
+            loadingMsg.remove();
+            appendMessage("❌ Error: Could not generate response", "bot");
+            console.error(error);
+          }
+        } else {
+          // This is for Reading/Writing mode
+          try {
+            const response = await fetch("/llm_response", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                query: query,
+                style: style,
+              }),
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+              appendMessage("❌ " + data.error, "bot");
+            } else if (data.response) {
+              appendMessage(data.response, "bot");
+            } else {
+              appendMessage(
+                "❌ Sorry, I could not generate a response. Please try again.",
+                "bot"
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            appendMessage(
+              "❌ An error occurred while generating the response. Please try again.",
+              "bot"
+            );
+          }
+        }
+      }
+
+      inputBox.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+      });
+
+      // Update the generateImage function to work with the chat interface
+      function generateImage() {
+        const prompt = document.getElementById("image-prompt").value;
+        if (!prompt) return;
+
+        // Show loading message
+        const loadingMsg = appendMessage("🎨 Generating your image...", "bot");
+
+        fetch("/generate_image", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: prompt }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            loadingMsg.remove();
+            if (data.image) {
+              appendMessage(
+                `Generated image for: "${prompt}"`,
+                "bot",
+                `<img src="${data.image}" class="generated-image" alt="Generated image">`
+              );
+            } else {
+              appendMessage(
+                "❌ Failed to generate image: " +
+                  (data.error || "Unknown error"),
+                "bot"
+              );
+            }
+          })
+          .catch((error) => {
+            loadingMsg.remove();
+            appendMessage("❌ Error generating image: " + error, "bot");
+          });
+      }
+
+      // Show image generation section when visual mode is selected
+      document.addEventListener("DOMContentLoaded", function () {
+        const style = new URLSearchParams(window.location.search).get("style");
+        if (style === "Visual") {
+          document.getElementById("imageGenerationSection").style.display =
+            "block";
+        }
+      });
+
+      function formatExplanations(explanations) {
+        const explanationParagraphs = explanations
+          .split("\n")
+          .filter((line) => line.trim())
+          .map((line) => {
+            const [term, ...explanation] = line.split(":");
+            return `<p><span class="term">${term}</span>: ${explanation.join(
+              ":"
+            )}</p>`;
+          })
+          .join("");
+
+        return `
+            <div class="term-explanations">
+                <h4>Terms Explained</h4>
+                ${explanationParagraphs}
+            </div>
+        `;
+      }
+
+      // Add function to switch modes
+      function switchVisualMode(newMode) {
+        currentMode = newMode;
+        // Clear mode indicator if it exists
+        const existingIndicator = document.querySelector(".mode-indicator");
+        if (existingIndicator) {
+          existingIndicator.remove();
+        }
+
+        // Add new mode indicator
+        const modeIndicator = document.createElement("div");
+        modeIndicator.className = "mode-indicator";
+        modeIndicator.textContent = `${
+          newMode.charAt(0).toUpperCase() + newMode.slice(1)
+        } Learning Mode`;
+        document.querySelector(".chat-header").appendChild(modeIndicator);
+      }
+    </script>
+  </body>
+</html>

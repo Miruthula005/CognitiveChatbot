@@ -1,0 +1,57 @@
+{
+  "Visual": [
+    {"id":"V1","question":"When trying to remember directions, I find myself imagining a picture of the route."},
+    {"id":"V2","question":"I often recall information by visualizing notes or slides rather than remembering the exact words."},
+    {"id":"V3","question":"If someone describes a place to me, I build a mental picture of it in my mind."},
+    {"id":"V4","question":"I notice I add arrows, shapes, or diagrams to my notes without thinking about it."},
+    {"id":"V5","question":"Relationships between ideas are clearer to me when I see them as a chart or diagram."},
+    {"id":"V6","question":"I often picture a concept in my mind before trying to explain it to someone else."},
+    {"id":"V7","question":"Maps, diagrams, or illustrations help me remember information better than text alone."},
+    {"id":"V8","question":"I notice patterns or colors in charts and use them to recall ideas more effectively."},
+    {"id":"V9","question":"When learning a process, I prefer to draw a flowchart or timeline to understand it."},
+    {"id":"V10","question":"I tend to visualize instructions step by step when assembling or creating something."}
+  ],
+  "Auditory": [
+    {"id":"A1","question":"I can often recognize a person's voice even if I can't remember their face."},
+    {"id":"A2","question":"Reading aloud or talking about material helps me understand it better."},
+    {"id":"A3","question":"I learn more effectively when I discuss topics in a group rather than just reading alone."},
+    {"id":"A4","question":"I usually prefer explaining things verbally instead of writing them down."},
+    {"id":"A5","question":"When learning something new, I enjoy listening to explanations more than reading them."},
+    {"id":"A6","question":"I remember information better if I hear it in a story rather than reading it silently."},
+    {"id":"A7","question":"I often hum, read aloud, or repeat facts to myself to remember them."},
+    {"id":"A8","question":"I find it easier to learn when a teacher explains concepts verbally rather than using slides."},
+    {"id":"A9","question":"I enjoy participating in discussions or debates to understand a topic more deeply."},
+    {"id":"A10","question":"I recall phone numbers, directions, or instructions better if I hear them instead of seeing them written."}
+  ],
+  "Reading/Writing": [
+    {"id":"R1","question":"I feel more confident when I have step-by-step written instructions to follow."},
+    {"id":"R2","question":"I tend to rewrite my notes in my own words to really understand the material."},
+    {"id":"R3","question":"When planning something, I often start by writing a list or outline."},
+    {"id":"R4","question":"I understand concepts better when they are explained in detailed text rather than shown in a picture."},
+    {"id":"R5","question":"I naturally prefer to learn from books, articles, or written resources."},
+    {"id":"R6","question":"I often make notes while listening to lectures to reinforce my understanding."},
+    {"id":"R7","question":"I prefer printed instructions or manuals over video demonstrations."},
+    {"id":"R8","question":"I often summarize chapters or articles in my own words to grasp the key ideas."},
+    {"id":"R9","question":"I enjoy creating outlines or written plans before starting a task."},
+    {"id":"R10","question":"I often learn best by reading examples and written explanations rather than watching or listening."}
+  ],
+  "Kinesthetic": [
+    {"id":"K1","question":"I usually grasp ideas faster when I try them out rather than just listening."},
+    {"id":"K2","question":"I enjoy building, making, or experimenting with things to understand how they work."},
+    {"id":"K3","question":"I often remember things better by recalling the action or movement I did while learning them."},
+    {"id":"K4","question":"I learn more effectively when workshops include role-play or physical activities."},
+    {"id":"K5","question":"It's difficult for me to stay focused if I have to sit still for a long time during learning."},
+    {"id":"K6","question":"I prefer learning activities that let me move around or use my hands."},
+    {"id":"K7","question":"I often learn faster by practicing or experimenting than by reading or listening."},
+    {"id":"K8","question":"I remember things better when I physically act them out, even silently."},
+    {"id":"K9","question":"I enjoy workshops, labs, or simulations where I can touch or manipulate objects."},
+    {"id":"K10","question":"I struggle to concentrate for long periods unless I am actively engaged in doing something."}
+  ],
+  "Scale": {
+    "Strongly Agree": 2,
+    "Agree": 1,
+    "Neutral": 0,
+    "Disagree": -1,
+    "Strongly Disagree": -2
+  }
+}

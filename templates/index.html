@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Learning Style Assessment</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Learning Style Assessment</h1>
+      <div class="progress-bar">
+        <div id="progress" class="progress"></div>
+      </div>
+
+      <div class="question-container">
+        <p id="question"></p>
+        <div class="options">
+          <button onclick="sendAnswer('Strongly Agree')">Strongly Agree</button>
+          <button onclick="sendAnswer('Agree')">Agree</button>
+          <button onclick="sendAnswer('Neutral')">Neutral</button>
+          <button onclick="sendAnswer('Disagree')">Disagree</button>
+          <button onclick="sendAnswer('Strongly Disagree')">
+            Strongly Disagree
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentQuestion = 0;
+      const progress = document.getElementById("progress");
+      const questionDiv = document.getElementById("question");
+
+      function updateProgress(current, total) {
+        const percent = (current / total) * 100;
+        progress.style.width = percent + "%";
+      }
+
+      function loadQuestion() {
+        fetch(`/next_question?index=${currentQuestion}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.done) {
+              window.location.href = `/after_result?style=${data.style}&confidence=${data.confidence}`;
+            } else {
+              questionDiv.textContent = data.question;
+              updateProgress(data.index, data.total);
+            }
+          });
+      }
+
+      function sendAnswer(answer) {
+        fetch("/submit_answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ answer: answer }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.done) {
+              window.location.href = `/after_result?style=${data.style}&confidence=${data.confidence}`;
+            } else {
+              currentQuestion++;
+              loadQuestion();
+            }
+          });
+      }
+
+      // Load first question when page loads
+      window.onload = loadQuestion;
+    </script>
+  </body>
+</html>

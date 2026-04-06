@@ -47,6 +47,6 @@ A multimodal AI-powered chatbot that personalizes learning experiences based on 
 ### 📦 Installation
 
 ```bash
-git clone https://github.com/bragadeez/CognitiveChatbot
+git clone https://github.com/Miruthula005/CognitiveChatbot
 cd CognitiveChatbot
 pip install -r requirements.txt

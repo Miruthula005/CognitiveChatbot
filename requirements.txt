@@ -8,17 +8,16 @@ groq>=0.4.0
 
 # Audio/Speech
 gTTS==2.5.4
-TTS>=0.22.0
 
 # Video Search
 youtube-search==1.1.1
 
 # Machine Learning & NLP
-torch>=2.5.0
 transformers==4.36.0
 sentence-transformers==2.3.1
 scikit-learn>=1.0.2
 joblib>=1.1.0
+pandas>=1.5.0 
 
 # Vector Store & Embeddings
 faiss-cpu>=1.11.0
@@ -36,7 +35,6 @@ nltk>=3.8.0
 
 # Optional Accelerators
 accelerate==0.25.0
-bitsandbytes==0.41.0
 
 # Other
 protobuf>=4.21.0

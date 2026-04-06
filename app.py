@@ -13,10 +13,20 @@ from groq import Groq
 from pathlib import Path
 from PIL import Image
 import re
+
+def search_youtube_video(query):
+    try:
+        results = YoutubeSearch(query, max_results=1).to_dict()
+        if results:
+            return "https://www.youtube.com/watch?v=" + results[0]['id']
+        return None
+    except Exception as e:
+        print("YouTube search error:", e)
+        return None
+
 from sklearn.preprocessing import StandardScaler
 import joblib
 import numpy as np
-from TTS.api import TTS
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
@@ -331,30 +341,6 @@ def text_to_speech():
     except Exception as e:
         return jsonify({"error": f"TTS failed: {e}"}), 500
 
-# Initialize Coqui TTS
-try:
-    tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC")
-    print("✓ Coqui TTS model loaded successfully!")
-except Exception as e:
-    print(f"❌ Error loading Coqui TTS model: {e}")
-    tts = None
-
-def generate_speech(text: str) -> str:
-    """Generate speech using Coqui TTS"""
-    try:
-        output_path = "static/speech.wav"
-        # Clean and prepare text for TTS
-        cleaned_text = text.replace('\n', ' ').strip()
-        # Limit text length to avoid tensor size issues
-        if len(cleaned_text) > 500:
-            cleaned_text = cleaned_text[:500] + "..."
-            
-        tts.tts_to_file(text=cleaned_text, file_path=output_path)
-        return url_for('static', filename='speech.wav')
-    except Exception as e:
-        print(f"Error generating speech: {e}")
-        return None
-
 def handle_visual_response(query: str, visual_type: str) -> dict:
     """Handle visual learning mode responses"""
     try:
@@ -391,6 +377,14 @@ def handle_visual_response(query: str, visual_type: str) -> dict:
     except Exception as e:
         print(f"Error in visual response: {e}")
         return {"error": str(e)}, 500
+    
+import uuid
+
+def generate_audio_gtts(text):
+    filename = f"static/audio_{uuid.uuid4().hex}.mp3"
+    tts = gTTS(text=text, lang='en')
+    tts.save(filename)
+    return "/" + filename
 
 def handle_auditory_response(query: str) -> dict:
     """Handle auditory learning mode responses"""
@@ -413,7 +407,7 @@ Question: {query}"""
             temperature=0.3
         ).choices[0].message.content.strip()
         
-        audio_path = generate_speech(response)
+        audio_path = generate_audio_gtts(response)
         
         return {
             "response": response,
@@ -856,8 +850,8 @@ DIAGRAM_KEYWORDS = {
 
 # Load the SVM model and scaler
 try:
-    model_path = r"C:\Users\braga\Documents\College\Project\Cognitive_Chatbot\saved_model\Learning Style\svm_LS_model.pkl"
-    scaler_path = r"C:\Users\braga\Documents\College\Project\Cognitive_Chatbot\saved_model\Learning Style\svm_scaler.pkl"
+    model_path = r"saved_model/svm_LS_model.pkl"
+    scaler_path = r"saved_model/svm_scaler.pkl"
     
     svm_model = joblib.load(model_path)
     svm_scaler = joblib.load(scaler_path)
@@ -959,7 +953,8 @@ def test_predictions():
         print(f"Test case {style}: Predicted {prediction}")
 
 # Call this after model loading
-test_predictions()
+if svm_model is not None and svm_scaler is not None:
+    test_predictions()
 
 if __name__ == "__main__":
     app.run(debug=True)

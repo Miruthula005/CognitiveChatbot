@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score, classification_report
 import joblib
 
 # Load data
-df = pd.read_csv("../Notebooks/dataset_updated.csv")
+df = pd.read_csv("dataset_updated.csv")
 
 # Drop unwanted columns
 columns_to_drop = ['Age', 'Gender']
@@ -44,8 +44,8 @@ print("Accuracy:", accuracy_score(y_test, y_pred))
 print(classification_report(y_test, y_pred, target_names=le.classes_))
 
 # Save model and scaler
-model_path = "../saved_model/Learning Style/svm_LS_model.pkl"
-scaler_path = "../saved_model/Learning Style/svm_scaler.pkl"
+model_path = "saved_model/svm_LS_model.pkl"
+scaler_path = "saved_model/svm_scaler.pkl"
 
 joblib.dump(svm_model, model_path)
 joblib.dump(scaler, scaler_path)

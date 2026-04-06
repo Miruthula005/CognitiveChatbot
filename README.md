@@ -47,6 +47,18 @@ A multimodal AI-powered chatbot that personalizes learning experiences based on 
 ### 📦 Installation
 
 ```bash
-git clone https://github.com/bragadeez/CognitiveChatbot
+git clone https://github.com/Miruthula005/CognitiveChatbot
 cd CognitiveChatbot
+# Create virtual environment
+python -m venv .venv
+# Activate
+.\.venv\Scripts\activate
+# Install dependencies
 pip install -r requirements.txt
+# Train model (if needed)
+python train_svm_model.py
+# Run project
+python app.py
+# Usage
+Open browser:
+http://127.0.0.1:5000

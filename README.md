@@ -59,6 +59,5 @@ pip install -r requirements.txt
 python train_svm_model.py
 # Run project
 python app.py
-# Usage
-Open browser:
+# Open in browser:
 http://127.0.0.1:5000
